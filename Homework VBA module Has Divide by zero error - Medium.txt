@@ -1,0 +1,101 @@
+Sub StockVolume()
+
+For Each ws In Worksheets
+
+'Add column headers
+ws.Activate
+ws.Cells(1, 9).Value = "Ticker"
+ws.Cells(1, 10).Value = "Yearly Change"
+ws.Cells(1, 11).Value = "Percent Change"
+ws.Cells(1, 12).Value = "Stock Volume"
+
+'Find the last row
+Dim LastRow As Long
+LastRow = ws.Cells(Rows.Count, 1).End(xlUp).row
+
+'set variable for ticker symbol
+Dim Ticker As String
+
+'set Stock Volume for holding total per symbol
+Dim Stock_Volume As Double
+Stock_Volume = 0
+
+'set Yearly Change to hold for change per symbol
+Dim Yearly_Change As Double
+Dim OpenPrice As Double
+Dim ClosePrice As Double
+Yearly_Change = 0
+
+'Set Percent Change to hold for each symbol
+Dim Percent_Change As Double
+Percent_Change = 0
+
+'keep track of the location for each Symbol
+Dim Summary_Table_Row As Double
+Summary_Table_Row = 2
+
+'Loop through all
+For i = 2 To LastRow
+
+'Check if still same Symbol
+If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+
+'Set Ticker
+Ticker = ws.Cells(i, 1).Value
+
+'Add to the Stock_Volume
+Stock_Volume = Stock_Volume + ws.Cells(i, 7).Value
+ClosePrice = Format(ws.Cells(i, 6), "Fixed")
+
+'Ticker moved to Column H
+ws.Range("I" & Summary_Table_Row).Value = Ticker
+
+'Print the Ticker Amount to the Table
+ws.Range("L" & Summary_Table_Row).Value = Stock_Volume
+
+'Set Yearly Change
+Yearly_Change = ClosePrice - OpenPrice
+   
+'Print Yearly Change
+ws.Range("J" & Summary_Table_Row).Value = Yearly_Change
+    If ws.Range("J" & Summary_Table_Row).Value > 0 Then
+    ws.Range("J" & Summary_Table_Row).Interior.ColorIndex = 4
+    Else:
+    ws.Range("J" & Summary_Table_Row).Interior.ColorIndex = 3
+    End If
+      
+'Set percent change
+    If OpenPrice = 0 And Yearly_Change = 0 Then
+    OpenPrice = 1
+    End If
+    OpenPrice = ws.Cells(i, 3).Value
+    Percent_Change = (Yearly_Change / OpenPrice)
+    
+  'Range("K2:K" & LastRow).NumberFormat = "0.00%"
+'ws.Cells(i, 11).Value = FormatPercent(Percent_Change, 2)
+    
+'print percent change
+ws.Range("K" & Summary_Table_Row).Value = Percent_Change
+     ws.Range("K2:K" & LastRow).NumberFormat = "0.00%"
+     
+'Add one to Table row
+Summary_Table_Row = Summary_Table_Row + 1
+
+'Reset Stock_Volume, Yearly_Change and Percent_Change
+Stock_Volume = 0
+Yearly_Change = 0
+Percent_Change = 0
+
+'If the cell immediately following a row is the same
+Else
+
+'add to the Stock_Volume
+Stock_Volume = Stock_Volume + ws.Cells(i, 7).Value
+
+End If
+
+Next i
+
+Next
+
+End Sub
