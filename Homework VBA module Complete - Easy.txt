@@ -1,0 +1,61 @@
+Sub StockVolume()
+
+For Each ws In Worksheets
+
+'Add column headers
+ws.Activate
+ws.Cells(1, 9) = "Ticker"
+ws.Cells(1, 10) = "Stock Volume"
+
+'Find the last row
+Dim LastRow As Long
+LastRow = ws.Cells(Rows.Count, 1).End(xlUp).row
+
+'set variable for ticker symbol
+Dim Ticker As String
+
+'set Stock Volume for holding total per symbol
+Dim Stock_Volume As Double
+Stock_Volume = 0
+
+'keep track of the location for each Symbol
+Dim Summary_Table_Row As Double
+Summary_Table_Row = 2
+
+'Loop through all
+For i = 2 To LastRow
+
+'Check if still same Symbol
+If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+
+'Set Ticker
+Ticker = ws.Cells(i, 1).Value
+
+'Add to the Stock_Volume
+Stock_Volume = Stock_Volume + ws.Cells(i, 7).Value
+
+'Ticker moved to Column H
+ws.Range("I" & Summary_Table_Row).Value = Ticker
+
+'Print the Ticker Amount to the Table
+ws.Range("J" & Summary_Table_Row).Value = Stock_Volume
+
+'Add one to Table row
+Summary_Table_Row = Summary_Table_Row + 1
+
+'Reset Stock_Volume
+Stock_Volume = 0
+
+'If the cell immediately following a row is the same
+Else
+
+'add to the Stock_Volume
+Stock_Volume = Stock_Volume + ws.Cells(i, 7).Value
+
+End If
+
+Next i
+
+Next
+
+End Sub
